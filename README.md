@@ -7,11 +7,11 @@ In this tutorial, we will walk through the process of setting up an Arch Linux s
 
 This guide is designed for second-term CIT students, and will provide both the practical steps and underlying concepts needed to manage a remote server. We will cover key topics such as:
 
-- **SSH keys**: A form of authentication used in the SSH protocol, functioning like a username and          password but primarily used for automated tasks.
+- **SSH keys**: A form of authentication used in the SSH protocol, functioning like a username and password but primarily used for automated tasks.
 
-- **SSH Protocol**: Known as Secure Shell, this protocol enables secure remote login between computers.     It offers robust authentication methods while ensuring communication security and integrity through     encryption.
+- **SSH Protocol**: Known as Secure Shell, this protocol enables secure remote login between computers. It offers robust authentication methods while ensuring communication security and integrity through     encryption.
 
-- **cloud-init**: A tool for automating the configuration and setup of a new server during its first        boot.
+- **cloud-init**: A tool for automating the configuration and setup of a new server during its first boot.
 
 - **DigitalOcean Droplets**: Virtual machines that can be quickly deployed and customized.
 
@@ -35,18 +35,18 @@ First, generate SSH keys to enable an authentication method to access the drople
 	   `ssh-keygen -t ed25519 -f ~/.ssh/do-key -C "your email address"`
 	
 	- `ssh-keygen`: This is the command used to generate SSH keys.
-	- `-t ed25519`: Specifies the type of key to create, in this case, the `ed25519` algorithm                 (recommended for its security and performance).
-	- `-f ~/.ssh/do-key`: This specifies the location and name of the key file. Here, the key will be           saved as `do-key` in the `.ssh` directory under your home folder.
-	- `-C "your email address"`: Adds a comment to the key to help identify it, typically your email            address.
+	- `-t ed25519`: Specifies the type of key to create, in this case, the `ed25519` algorithm (recommended for its security and performance).
+	- `-f ~/.ssh/do-key`: This specifies the location and name of the key file. Here, the key will be saved as `do-key` in the `.ssh` directory under your home folder.
+	- `-C "your email address"`: Adds a comment to the key to help identify it, typically your email address.
 	
 2.  Next, on the terminal, apply this command;
 	   `Get-Content C:\Users\your-user-name\.ssh\do-key.pub | Set-Clipboard`
 	   
-	- `Get-Content C:\Users\your-user-name\.ssh\do-key.pub`: This part reads the contents of the public         key file (`do-key.pub`) located in the `.ssh` directory of your user profile.
+	- `Get-Content C:\Users\your-user-name\.ssh\do-key.pub`: This part reads the contents of the public key file (`do-key.pub`) located in the `.ssh` directory of your user profile.
 	    
-	- `|`: This is a pipeline operator that takes the output of the command on the left (in this case,         the contents of the public key) and passes it as input to the command on the right.
+	- `|`: This is a pipeline operator that takes the output of the command on the left (in this case, the contents of the public key) and passes it as input to the command on the right.
 	    
-	- `Set-Clipboard`: This command takes the input it receives (the public key content) and copies it to      the clipboard, allowing you to easily paste it elsewhere.
+	- `Set-Clipboard`: This command takes the input it receives (the public key content) and copies it to the clipboard, allowing you to easily paste it elsewhere.
 
 #### **Step 2: Add SSH Key to Digital Ocean Account**
 
@@ -73,15 +73,15 @@ After generating your SSH key, you need to add it to your DigitalOcean account.
 2. Click the button and the menu will dropdown displaying a **Droplets** option. 
 3. Selecting that option will lead you to a new page titles Create Droplets
    
-	 1. **Chose Region**: Pick San Francisco (SFO3) as the default data center due to it being the                nearest location to us.
+	 1. **Chose Region**: Pick San Francisco (SFO3) as the default data center due to it being the nearest location to us.
 	 2. **Choose an image**: A navigation bar depiction three options; 
 			 -  OS
 			 -  Marketplace (246)
 			 - Custom images (this is where the Arch Linux image we uploaded will reside)
 	3. Select Custom image and pick our uploaded Arch Linux image. 
-	4. **Choose Size**: For our uses, the default Basic Plan will suit us fine as the default droplet            type.
-	5. For CPU options we will select **Premium Intel** Disk: NVMe SSD for $8 a month (or $0.012/hour),         this includes 35 GB for your storage.
-	6. **Choose Authentication Method**: This is where the SSH key comes into play, select the key you           added
+	4. **Choose Size**: For our uses, the default Basic Plan will suit us fine as the default droplet type.
+	5. For CPU options we will select **Premium Intel** Disk: NVMe SSD for $8 a month (or $0.012/hour), this includes 35 GB for your storage.
+	6. **Choose Authentication Method**: This is where the SSH key comes into play, select the key you added
 	7. Give the droplet a hostname like arch or bcit to make it shorter when it appears on the prompt.
 	8. All other settings can be left on default
 
@@ -93,24 +93,24 @@ Now for the cloud-init file, leave the droplet creation page as it is for now, w
 
 ### **How Cloud-Init Works**
 
-1. **Initialization at Boot**: When a cloud instance is launched, cloud-init runs automatically during       the initial boot process. It retrieves metadata from the cloud provider, such as user data and          instance-specific information.
+1. **Initialization at Boot**: When a cloud instance is launched, cloud-init runs automatically during the initial boot process. It retrieves metadata from the cloud provider, such as user data and          instance-specific information.
     
-2. **User Data**: Cloud-init can be configured using "user data," which is typically provided as a           script or configuration file when launching the instance. This user data can include files such as      cloud-config YAML files.
+2. **User Data**: Cloud-init can be configured using "user data," which is typically provided as a script or configuration file when launching the instance. This user data can include files such as      cloud-config YAML files.
     
 3. **Stages of Execution**: Cloud-init operates in several stages:
     
     - **Init**: The initial stage where cloud-init collects metadata from the cloud provider.
-    - **Config**: The configuration stage, where it processes the user data and applies any specified         settings.
+    - **Config**: The configuration stage, where it processes the user data and applies any specified settings.
     - **Final**: The final stage executes any commands specified in the user data.
 
-4. **Handling Metadata**: Cloud-init retrieves instance metadata from the cloud provider (e.g., AWS,         Azure, DigitalOcean), which contains information about the instance, such as its network                configuration, region, and security settings.
+4. **Handling Metadata**: Cloud-init retrieves instance metadata from the cloud provider (e.g., AWS, Azure, DigitalOcean), which contains information about the instance, such as its network                configuration, region, and security settings.
 
 #### **Step 5: Setting up a Cloud-Init Configuration File**
 
 - Now lets create the config file to automate the setup of our Arch Linux droplet
 - We'll start by creating a file that can be named as cloud-config.yaml
-	- YAML is a serialization language, a lot like JSON and a superset of it, meaning that it is often        used for writing configuration files
-- You can use notepad to write the document but doing this part in a text-editor is much better and you   are student of information technology. 
+	- YAML is a serialization language, a lot like JSON and a superset of it, meaning that it is often used for writing configuration files
+- You can use notepad to write the document but doing this part in a text-editor is much better and you are student of information technology. 
 
 #### **Step 6: Writing the Cloud-Init File**
 
@@ -133,15 +133,15 @@ Now for the cloud-init file, leave the droplet creation page as it is for now, w
 ###### Explanation
 - `#cloud-config` 
 	- This line is the file header, indicating that its a cloud-init configuration file for cloud-init to process it correctly.
-- `users:` This section is the first directive key which defines user accounts, the authorized key of     the user, sudo privileges, and the shell to be used as a single item value under the directive. This    will tell the cloud-init what to add to or use in the account. For example, here a new user is being    created called newuser, they don't require password access to sudo, and the shell they will using.
-- `write_files:` This second directive informs what the file's path be, and its contents. This file       includes `|` character is used for a multiline string
-- `runcmd`: This last directive ends the file by executing a command once the config file is               initialized and processed. In this case it echoes a message stating that file has been created          successfully.
+- `users:` This section is the first directive key which defines user accounts, the authorized key of the user, sudo privileges, and the shell to be used as a single item value under the directive. This    will tell the cloud-init what to add to or use in the account. For example, here a new user is being created called newuser, they don't require password access to sudo, and the shell they will using.
+- `write_files:` This second directive informs what the file's path be, and its contents. This file includes `|` character is used for a multiline string
+- `runcmd`: This last directive ends the file by executing a command once the config file is initialized and processed. In this case it echoes a message stating that file has been created successfully.
 
 #### **Step 7: Adding the Configuration File to the Droplet**
 
 Now that the config file has been made, we must add it to the droplet.
 
-- Under the **Choose Authentication Method**, click on advanced options and  choosing the **Add           Initialization scripts**
+- Under the **Choose Authentication Method**, click on advanced options and  choosing the **Add Initialization scripts**
 - A text box will display soon after, here we paste the contents of the cloud-init config file
 - Finally, we can click on **Create Droplet** on the bottom right of the screen.
 
@@ -152,12 +152,12 @@ This is the last part of process and perhaps the most important. Connecting to o
 - Open the Window's terminal and run the following command;
 		`ssh -i .ssh/do-key arch@your-droplets-ip-address`
 
-  	-  `-i`: This option is used to specify the identify file, which here is the private SSH key (`do-          key`) for authentication. 
-  	- `arch@your-droplets-ip-address`: This specifies the username (`arch`) and the IP address of the         remote server (`your-droplets-ip-address`). 
+  	-  `-i`: This option is used to specify the identify file, which here is the private SSH key (`do-key`) for authentication. 
+  	- `arch@your-droplets-ip-address`: This specifies the username (`arch`) and the IP address of the emote server (`your-droplets-ip-address`). 
   	- Replace `your-droplets-ip-address` with the actual IP address of your DigitalOcean droplet.
 
 #### **Troubleshooting** 
-- **SSH connection error**: If you receive a "Permission denied" error when connecting via SSH, make       sure that: 
+- **SSH connection error**: If you receive a "Permission denied" error when connecting via SSH, make sure that: 
   	- The SSH key was correctly added to DigitalOcean. 
   	- You are using the correct private key (`-i` flag). 
   	- The correct username (`arch`) and IP address are used.
